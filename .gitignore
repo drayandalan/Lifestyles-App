@@ -1,0 +1,138 @@
+AppsGateway/HELP.md
+AppsGateway/target/
+!AppsGateway/.mvn/wrapper/maven-wrapper.jar
+!AppsGateway/**/src/main/**/target/
+!AppsGateway/**/src/test/**/target/
+
+### STS ###
+AppsGateway/.apt_generated
+AppsGateway/.classpath
+AppsGateway/.factorypath
+AppsGateway/.project
+AppsGateway/.settings
+AppsGateway/.springBeans
+AppsGateway/.sts4-cache
+
+### IntelliJ IDEA ###
+AppsGateway/.idea
+AppsGateway/*.iws
+AppsGateway/*.iml
+AppsGateway/*.ipr
+
+### NetBeans ###
+AppsGateway/nbproject/private/
+AppsGateway/nbbuild/
+AppsGateway/dist/
+AppsGateway/nbdist/
+AppsGateway/.nb-gradle/
+AppsGatewaybuild/
+!AppsGateway/**/src/main/**/build/
+!AppsGateway/**/src/test/**/build/
+
+### VS Code ###
+AppsGateway/.vscode/
+
+
+FoodApp/HELP.md
+FoodApp/target/
+!FoodApp/.mvn/wrapper/maven-wrapper.jar
+!FoodApp/**/src/main/**/target/
+!FoodApp/**/src/test/**/target/
+
+### STS ###
+FoodApp/.apt_generated
+FoodApp/.classpath
+FoodApp/.factorypath
+FoodApp/.project
+FoodApp/.settings
+FoodApp/.springBeans
+FoodApp/.sts4-cache
+
+### IntelliJ IDEA ###
+FoodApp/.idea
+FoodApp/*.iws
+FoodApp/*.iml
+FoodApp/*.ipr
+
+### NetBeans ###
+FoodApp/nbproject/private/
+FoodApp/nbbuild/
+FoodApp/dist/
+FoodApp/nbdist/
+FoodApp/.nb-gradle/
+FoodAppbuild/
+!FoodApp/**/src/main/**/build/
+!FoodApp/**/src/test/**/build/
+
+### VS Code ###
+FoodApp/.vscode/
+
+
+FootballApp/HELP.md
+FootballApp/target/
+!FootballApp/.mvn/wrapper/maven-wrapper.jar
+!FootballApp/**/src/main/**/target/
+!FootballApp/**/src/test/**/target/
+
+### STS ###
+FootballApp/.apt_generated
+FootballApp/.classpath
+FootballApp/.factorypath
+FootballApp/.project
+FootballApp/.settings
+FootballApp/.springBeans
+FootballApp/.sts4-cache
+
+### IntelliJ IDEA ###
+FootballApp/.idea
+FootballApp/*.iws
+FootballApp/*.iml
+FootballApp/*.ipr
+
+### NetBeans ###
+FootballApp/nbproject/private/
+FootballApp/nbbuild/
+FootballApp/dist/
+FootballApp/nbdist/
+FootballApp/.nb-gradle/
+FootballAppbuild/
+!FootballApp/**/src/main/**/build/
+!FootballApp/**/src/test/**/build/
+
+### VS Code ###
+FootballApp/.vscode/
+
+
+LifestylesApp/HELP.md
+LifestylesApp/target/
+!LifestylesApp/.mvn/wrapper/maven-wrapper.jar
+!LifestylesApp/**/src/main/**/target/
+!LifestylesApp/**/src/test/**/target/
+
+### STS ###
+LifestylesApp/.apt_generated
+LifestylesApp/.classpath
+LifestylesApp/.factorypath
+LifestylesApp/.project
+LifestylesApp/.settings
+LifestylesApp/.springBeans
+LifestylesApp/.sts4-cache
+
+### IntelliJ IDEA ###
+LifestylesApp/.idea
+LifestylesApp/*.iws
+LifestylesApp/*.iml
+LifestylesApp/*.ipr
+
+### NetBeans ###
+LifestylesApp/nbproject/private/
+LifestylesApp/nbbuild/
+LifestylesApp/dist/
+LifestylesApp/nbdist/
+LifestylesApp/.nb-gradle/
+LifestylesAppbuild/
+!LifestylesApp/**/src/main/**/build/
+!LifestylesApp/**/src/test/**/build/
+
+### VS Code ###
+LifestylesApp/.vscode/
