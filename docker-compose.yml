@@ -11,30 +11,30 @@ services:
       context: ./LifestylesApp
       dockerfile: Dockerfile
     environment:
-      MYSQL_HOST:
-      MYSQL_PORT:
-      MYSQL_USERNAME:
-      MYSQL_PASSWORD:
-      KAFKA_BOOTSTRAP_ADDRESS:
-      KAFKA_USERNAME:
-      KAFKA_PASSWORD:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      KAFKA_BOOTSTRAP_ADDRESS: ${KAFKA_BOOTSTRAP_ADDRESS}
+      KAFKA_USERNAME: ${KAFKA_USERNAME}
+      KAFKA_PASSWORD: ${KAFKA_PASSWORD}
 
   FoodApp:
     build:
       context: ./FoodApp
       dockerfile: Dockerfile
     environment:
-      KAFKA_BOOTSTRAP_ADDRESS:
-      KAFKA_USERNAME:
-      KAFKA_PASSWORD:
-      FOOD_API_KEY:
+      KAFKA_BOOTSTRAP_ADDRESS: ${KAFKA_BOOTSTRAP_ADDRESS}
+      KAFKA_USERNAME: ${KAFKA_USERNAME}
+      KAFKA_PASSWORD: ${KAFKA_PASSWORD}
+      FOOD_API_KEY: ${FOOD_API_KEY}
 
   FootballApp:
     build:
       context: ./FootballApp
       dockerfile: Dockerfile
     environment:
-      KAFKA_BOOTSTRAP_ADDRESS:
-      KAFKA_USERNAME:
-      KAFKA_PASSWORD:
-      FOOTBALL_API_KEY:
+      KAFKA_BOOTSTRAP_ADDRESS: ${KAFKA_BOOTSTRAP_ADDRESS}
+      KAFKA_USERNAME: ${KAFKA_USERNAME}
+      KAFKA_PASSWORD: ${KAFKA_PASSWORD}
+      FOOTBALL_API_KEY: ${FOOTBALL_API_KEY}
