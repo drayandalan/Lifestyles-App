@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public class GenerateTokenDTO {
+public class DeleteUserDTO {
 
     @Data
     @Builder
@@ -23,7 +23,7 @@ public class GenerateTokenDTO {
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Response {
-        private String token;
-        private String errorMessage;
+        private Boolean error;
+        private String message;
     }
 }

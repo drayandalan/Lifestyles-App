@@ -1,5 +1,7 @@
 package com.ray.project.api.LifestylesApp.filter;
 
+import com.ray.project.api.LifestylesApp.model.entity.User;
+import com.ray.project.api.LifestylesApp.repository.UserRepository;
 import com.ray.project.api.LifestylesApp.util.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Component
@@ -23,6 +27,8 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,7 +38,8 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             try {
                 Claims claims = jwtTokenUtil.parseToken(token);
-                if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                List<User> user = userRepository.findByActiveToken(token);
+                if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null && !user.isEmpty()) {
                     Authentication authentication = new UsernamePasswordAuthenticationToken(
                             claims.getSubject(), null, null);
                     SecurityContextHolder.getContext().setAuthentication(authentication);

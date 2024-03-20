@@ -37,6 +37,16 @@ public class GatewayConfiguration {
                         .and()
                         .path("/lifestyles-api/generateToken")
                         .uri("http://localhost:8085"))
+                .route("updateUser_route", r -> r
+                        .method(HttpMethod.POST)
+                        .and()
+                        .path("/lifestyles-api/updateUser")
+                        .uri("http://localhost:8085"))
+                .route("deleteUser_route", r -> r
+                        .method(HttpMethod.POST)
+                        .and()
+                        .path("/lifestyles-api/deleteUser")
+                        .uri("http://localhost:8085"))
                 .build();
     }
 }

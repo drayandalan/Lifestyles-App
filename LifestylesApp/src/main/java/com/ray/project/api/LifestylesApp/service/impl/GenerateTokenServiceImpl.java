@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -35,6 +36,7 @@ public class GenerateTokenServiceImpl implements GenerateTokenService, UserDetai
     }
 
     @Override
+    @Transactional
     public GenerateTokenDTO.Response generateToken(GenerateTokenDTO.Request request) {
         GenerateTokenDTO.Response response = GenerateTokenDTO.Response.builder().build();
         UserDetails userDetails = null;
@@ -46,11 +48,20 @@ public class GenerateTokenServiceImpl implements GenerateTokenService, UserDetai
         }
 
         if (userDetails != null && passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
-            String token = jwtTokenUtil.generateToken(request.getUsername());
-            log.info("JWT Token: "+token);
-            response.setToken(token);
+            try {
+                String token = jwtTokenUtil.generateToken(request.getUsername());
+                log.info("JWT Token: "+token);
+                response.setToken(token);
+                userRepository.updateUserActiveToken(token, request.getUsername());
+
+                return response;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        return response;
+        return GenerateTokenDTO.Response.builder()
+                .errorMessage("Failed to generate token.")
+                .build();
     }
 }
