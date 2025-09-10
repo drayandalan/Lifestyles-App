@@ -1,40 +1,129 @@
-version: '3.8'
-
 services:
-  AppsGateway:
+  # ───────── Infra: MySQL ─────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-appdb}
+      MYSQL_USER: ${MYSQL_USERNAME:-appuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppass}
+    command: ["mysqld", "--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USERNAME:-appuser} -p${MYSQL_PASSWORD:-apppass} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ───────── Infra: Kafka (KRaft) ─────────
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: kafka
+    environment:
+      # KRaft single-node
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_KRAFT_CLUSTER_ID: "abcdefghijklmnopqrstuv"  # any 22-char base64-ish ID
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      # Listeners (9092 internal, 9094 external), 9093 controller
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,EXTERNAL://:9094,CONTROLLER://:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://${KAFKA_EXTERNAL_HOST:-localhost}:9094"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # Partitions & replication suitable for single-broker dev
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_CFG_NUM_PARTITIONS: 3
+
+      # ── Optional SASL/PLAIN auth (leave disabled for simple dev) ──
+      # KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:SASL_PLAINTEXT,EXTERNAL:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT"
+      # KAFKA_CFG_SASL_ENABLED_MECHANISMS: "PLAIN"
+      # KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "PLAIN"
+      # KAFKA_CLIENT_USERS: "${KAFKA_USERNAME:-kuser}"
+      # KAFKA_CLIENT_PASSWORDS: "${KAFKA_PASSWORD:-kpass}"
+      # KAFKA_INTER_BROKER_USER: "${KAFKA_USERNAME:-kuser}"
+      # KAFKA_INTER_BROKER_PASSWORD: "${KAFKA_PASSWORD:-kpass}"
+
+      # Allow plaintext for local dev
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "${KAFKA_AUTO_CREATE_TOPICS_ENABLE:-true}"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    ports:
+      - "9092:9092"   # internal (container-to-container) also exposed for convenience
+      - "9094:9094"   # external client access from host
+    volumes:
+      - kafka_data:/bitnami/kafka
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ───────── Apps ─────────
+  appsgateway:
     build:
       context: ./AppsGateway
       dockerfile: Dockerfile
-  
-  LifestylesApp:
+    ports:
+      - "8080:8080"
+    depends_on:
+      kafka: { condition: service_healthy }
+      mysql: { condition: service_healthy }
+
+  lifestylesapp:
     build:
       context: ./LifestylesApp
       dockerfile: Dockerfile
     environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_USERNAME: ${MYSQL_USERNAME}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      KAFKA_BOOTSTRAP_ADDRESS: ${KAFKA_BOOTSTRAP_ADDRESS}
-      KAFKA_USERNAME: ${KAFKA_USERNAME}
-      KAFKA_PASSWORD: ${KAFKA_PASSWORD}
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-appdb}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-appuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppass}
+      KAFKA_BOOTSTRAP_ADDRESS: kafka:9092
+      KAFKA_USERNAME: ${KAFKA_USERNAME:-}
+      KAFKA_PASSWORD: ${KAFKA_PASSWORD:-}
+    ports:
+      - "8085:8085"
+    depends_on:
+      kafka: { condition: service_healthy }
+      mysql: { condition: service_healthy }
 
-  FoodApp:
+  foodapp:
     build:
       context: ./FoodApp
       dockerfile: Dockerfile
     environment:
-      KAFKA_BOOTSTRAP_ADDRESS: ${KAFKA_BOOTSTRAP_ADDRESS}
-      KAFKA_USERNAME: ${KAFKA_USERNAME}
-      KAFKA_PASSWORD: ${KAFKA_PASSWORD}
+      KAFKA_BOOTSTRAP_ADDRESS: kafka:9092
+      KAFKA_USERNAME: ${KAFKA_USERNAME:-}
+      KAFKA_PASSWORD: ${KAFKA_PASSWORD:-}
       FOOD_API_KEY: ${FOOD_API_KEY}
+    ports:
+      - "8086:8086"
+    depends_on:
+      kafka: { condition: service_healthy }
 
-  FootballApp:
+  footballapp:
     build:
       context: ./FootballApp
       dockerfile: Dockerfile
     environment:
-      KAFKA_BOOTSTRAP_ADDRESS: ${KAFKA_BOOTSTRAP_ADDRESS}
-      KAFKA_USERNAME: ${KAFKA_USERNAME}
-      KAFKA_PASSWORD: ${KAFKA_PASSWORD}
+      KAFKA_BOOTSTRAP_ADDRESS: kafka:9092
+      KAFKA_USERNAME: ${KAFKA_USERNAME:-}
+      KAFKA_PASSWORD: ${KAFKA_PASSWORD:-}
       FOOTBALL_API_KEY: ${FOOTBALL_API_KEY}
+    ports:
+      - "8087:8087"
+    depends_on:
+      kafka: { condition: service_healthy }
+
+volumes:
+  mysql_data:
+  kafka_data:
