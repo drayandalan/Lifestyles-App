@@ -136,3 +136,9 @@ LifestylesAppbuild/
 
 ### VS Code ###
 LifestylesApp/.vscode/
+
+.DS_Store
+AppsGateway/.DS_Store
+FoodApp/.DS_Store
+FootballApp/.DS_Store
+FootballApp/.DS_Store
